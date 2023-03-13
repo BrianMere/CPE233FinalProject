@@ -29,12 +29,15 @@ module OTTER_Wrapper(
    // In future labs you can add more MMIO, and you'll have
    // to add constants here for the mux below
    localparam SWITCHES_AD = 32'h11000000;
+   localparam VGA_READ_AD = 32'h11000160;
           
    // OUTPUT PORT IDS //////////////////////////////////////////////////////
    // In future labs you can add more MMIO
    localparam LEDS_AD    = 32'h11000020; //32'h11000020
    localparam SSEG_AD    = 32'h11000040; //32'h11000040
    localparam KEYBOARD_AD  = 32'h11000100;
+   localparam VGA_ADDR_AD = 32'h11000120;
+   localparam VGA_COLOR_AD = 32'h11000140;
     
    // Signals for connecting OTTER_MCU to OTTER_wrapper /////////////////////
    logic clk_50 = 0;
@@ -43,7 +46,13 @@ module OTTER_Wrapper(
    logic [31:0] IOBUS_out, IOBUS_in, IOBUS_addr;
    logic s_reset, IOBUS_wr;
    assign s_intr = keyboard_intr /* | btn_intr */;
-   
+
+   // Signals for connecting VGA Framebuffer Driver
+   logic r_vga_we;             // write enable
+   logic [12:0] r_vga_wa;      // address of framebuffer to read and write
+   logic [7:0] r_vga_wd;       // pixel color data to write to framebuffer
+   logic [7:0] r_vga_rd;       // pixel color data read from framebuffer
+ 
    // Registers for buffering outputs  /////////////////////////////////////
    logic [15:0] r_SSEG;
     
@@ -67,6 +76,11 @@ module OTTER_Wrapper(
    KeyboardDriver KEYBD (.CLK(CLK), .PS2DATA(PS2Data), .PS2CLK(PS2Clk),
                          .INTRPT(keyboard_intr), .SCANCODE(s_scancode)); 
    
+   // Declare VGA Frame Buffer //////////////////////////////////////////////
+   vga_fb_driver_80x60 VGA(.CLK_50MHz(clk_50), .WA(r_vga_wa), .WD(r_vga_wd),
+                               .WE(r_vga_we), .RD(r_vga_rd), .ROUT(VGA_RGB[7:5]),
+                               .GOUT(VGA_RGB[4:2]), .BOUT(VGA_RGB[1:0]),
+                               .HS(VGA_HS), .VS(VGA_VS));   
                            
    // Clock Divider to create 50 MHz Clock //////////////////////////////////
    always_ff @(posedge CLK) begin
@@ -80,10 +94,11 @@ module OTTER_Wrapper(
    always_comb begin
         case(IOBUS_addr)
             SWITCHES_AD: IOBUS_in = {16'b0,SWITCHES};
+            KEYBOARD_AD: IOBUS_in = {24'b0, s_scancode};
+            VGA_READ_AD: IOBUS_in = {24'b0, r_vga_rd};
             default:     IOBUS_in = 32'b0;    // default bus input to 0
         endcase
     end
-   
    
    // Connect Board output peripherals (Memory Mapped IO devices) to IOBUS
     always_ff @ (posedge clk_50) begin
@@ -91,8 +106,13 @@ module OTTER_Wrapper(
             case(IOBUS_addr)
                 LEDS_AD: LEDS   <= IOBUS_out[15:0];
                 SSEG_AD: r_SSEG <= IOBUS_out[15:0];
+                VGA_ADDR_AD: r_vga_wa <= IOBUS_out[12:0];
+                VGA_COLOR_AD:
+                begin  
+                        r_vga_wd <= IOBUS_out[7:0];
+                        r_vga_we <= 1;  
+                end
             endcase
-    end
-   
-   endmodule
+        end
+endmodule
 
