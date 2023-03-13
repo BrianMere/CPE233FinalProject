@@ -24,29 +24,31 @@ module OTTER_Wrapper(
    output [3:0] ANODES
    );
        
-    // INPUT PORT IDS ///////////////////////////////////////////////////////
-    // Right now, the only possible inputs are the switches
-    // In future labs you can add more MMIO, and you'll have
-    // to add constants here for the mux below
-    localparam SWITCHES_AD = 32'h11000000;
-           
-    // OUTPUT PORT IDS //////////////////////////////////////////////////////
-    // In future labs you can add more MMIO
-    localparam LEDS_AD    = 32'h11000020; //32'h11000020
-    localparam SSEG_AD    = 32'h11000040; //32'h11000040
+   // INPUT PORT IDS ///////////////////////////////////////////////////////
+   // Right now, the only possible inputs are the switches
+   // In future labs you can add more MMIO, and you'll have
+   // to add constants here for the mux below
+   localparam SWITCHES_AD = 32'h11000000;
+          
+   // OUTPUT PORT IDS //////////////////////////////////////////////////////
+   // In future labs you can add more MMIO
+   localparam LEDS_AD    = 32'h11000020; //32'h11000020
+   localparam SSEG_AD    = 32'h11000040; //32'h11000040
+   localparam KEYBOARD_AD  = 32'h11000100;
     
    // Signals for connecting OTTER_MCU to OTTER_wrapper /////////////////////
    logic clk_50 = 0;
-   logic btn_intr;
+   logic btn_intr, keyboard_intr;
     
    logic [31:0] IOBUS_out, IOBUS_in, IOBUS_addr;
    logic s_reset, IOBUS_wr;
+   assign s_intr = keyboard_intr /* | btn_intr */;
    
    // Registers for buffering outputs  /////////////////////////////////////
    logic [15:0] r_SSEG;
     
    // Declare OTTER_CPU ////////////////////////////////////////////////////
-   Otter_MCU CPU (.RST(s_reset), .INTR(btn_intr), .CLK(clk_50),
+   Otter_MCU CPU (.RST(s_reset), .INTR(s_intr), .CLK(clk_50),
                   .IOBUS_OUT(IOBUS_out), .IOBUS_IN(IOBUS_in),
                   .IOBUS_ADDR(IOBUS_addr), .IOBUS_WR(IOBUS_wr));
 
@@ -60,6 +62,10 @@ module OTTER_Wrapper(
         .BTN(BTNL),
         .DB_BTN(btn_intr)
    );
+
+   // Declare Keyboard Driver //////////////////////////////////////////////
+   KeyboardDriver KEYBD (.CLK(CLK), .PS2DATA(PS2Data), .PS2CLK(PS2Clk),
+                         .INTRPT(keyboard_intr), .SCANCODE(s_scancode)); 
    
                            
    // Clock Divider to create 50 MHz Clock //////////////////////////////////
@@ -69,7 +75,6 @@ module OTTER_Wrapper(
    
    // Connect Signals ///////////////////////////////////////////////////////
    assign s_reset = BTNC;
-   
    
    // Connect Board input peripherals (Memory Mapped IO devices) to IOBUS
    always_comb begin
@@ -90,3 +95,4 @@ module OTTER_Wrapper(
     end
    
    endmodule
+
