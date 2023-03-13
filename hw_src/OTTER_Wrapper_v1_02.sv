@@ -19,9 +19,14 @@ module OTTER_Wrapper(
    input BTNL, // used for interrupts
    input BTNC,
    input [15:0] SWITCHES,
+   input PS2Clk,
+   input PS2Data,
    output logic [15:0] LEDS,
    output [7:0] CATHODES,
-   output [3:0] ANODES
+   output [3:0] ANODES,
+   output [7:0] VGA_RGB,
+   output VGA_HS,
+   output VGA_VS
    );
        
    // INPUT PORT IDS ///////////////////////////////////////////////////////
