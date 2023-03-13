@@ -19,8 +19,8 @@ module OTTER_Wrapper(
    input BTNL, // used for interrupts
    input BTNC,
    input [15:0] SWITCHES,
-   input PS2Clk,
-   input PS2Data,
+   input PS2CLK,
+   input PS2DATA,
    output logic [15:0] LEDS,
    output [7:0] CATHODES,
    output [3:0] ANODES,
