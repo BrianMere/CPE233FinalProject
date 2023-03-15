@@ -45,7 +45,7 @@ module OTTER_Wrapper(
    logic /*btn_intr,*/ keyboard_intr;
     
    logic [31:0] IOBUS_out, IOBUS_in, IOBUS_addr;
-   logic s_reset, IOBUS_wr;
+   logic s_reset, IOBUS_wr, s_intr;
    assign s_intr = keyboard_intr /* | btn_intr */;
    
    // signals for keyboard
