@@ -2,9 +2,9 @@
 .eqv VG_ADDR, 0x11000120
 .eqv VG_COLOR, 0x11000140
 
-.data
-# FONT: 0x00009f96
-FONT: 0x0000ffff
+.eqv LETTER_A, 0x000069f9
+.eqv LETTER_B, 0x0000ef9e
+.eqv LETTER_C, 0x00006987
 
 .text
 main:
@@ -13,50 +13,62 @@ main:
 	li s3, VG_COLOR
 
 	# fill screen using default color
-	# call draw_background  # must not modify s2, s3
+	call draw_background  # must not modify s2, s3
 	
-	li a0, 40		# X coordinate
+	li a0, 33		# X coordinate
 	li a1, 25		# Y coordinate
-	la a2, FONT
-	li a3, 0xFF		# color red (7/7 red, 0/7 green, 0/3 blue)
+	li a2, LETTER_A
+	li a3, 0xE0		# color red 
+	call draw_letter
+	
+	li a0, 38		# X coordinate
+	li a1, 25		# Y coordinate
+	li a2, LETTER_B
+	li a3, 0x1c		# color green
+	call draw_letter
+	
+	li a0, 43		# X coordinate
+	li a1, 25		# Y coordinate
+	li a2, LETTER_C
+	li a3, 0x03		# color blue
 	call draw_letter
 
-    	li a0, 10		# X coordinate
-	li a1, 20		# Y coordinate
-	li a3, 0xE0		# color red (7/7 red, 0/7 green, 0/3 blue)
+    	# li a0, 10		# X coordinate
+	# li a1, 20		# Y coordinate
+	# li a3, 0xE0		# color red (7/7 red, 0/7 green, 0/3 blue)
 	# call draw_dot  # must not modify s2, s3
 
-	li a0, 50		# X coordinate
-	li a1, 20		# Y coordinate
-	li a3, 0xE0		# color red (7/7 red, 0/7 green, 0/3 blue)
+	# li a0, 50		# X coordinate
+	# li a1, 20		# Y coordinate
+	# li a3, 0xE0		# color red (7/7 red, 0/7 green, 0/3 blue)
 	# call draw_dot  # must not modify s2, s3
 
-	li a0, 5		# X coordinate
-	li a1, 5		# Y coordinate
-	li a3, 0xE5		# color off-red (7/7 red, 1/7 green, 1/3 blue)
+	# li a0, 5		# X coordinate
+	# li a1, 5		# Y coordinate
+	# li a3, 0xE5		# color off-red (7/7 red, 1/7 green, 1/3 blue)
 	# call draw_dot  # must not modify s2, s3
 
 	# li a3, 0xE0		# color red (7/7 red, 0/7 green, 0/3 blue)
-	li a3, 0xFF
-	li a0, 4		# start X coordinate
-	li a1, 1		# Y coordinate
-	li a2, 70		# ending X coordinate
-	call draw_horizontal_line  # must not modify: a3, s2, s3
+	# li a3, 0xFF
+	# li a0, 4		# start X coordinate
+	# li a1, 1		# Y coordinate
+	# li a2, 70		# ending X coordinate
+	# call draw_horizontal_line  # must not modify: a3, s2, s3
 
-	li a0, 4		# X coordinate
-	li a1, 8		# starting Y coordinate
-	li a2, 55		# ending Y coordinate
+	# li a0, 4		# X coordinate
+	# li a1, 8		# starting Y coordinate
+	# li a2, 55		# ending Y coordinate
 	# call draw_vertical_line  # must not modify s2, s3
 
 done:	j done # continuous loop
 
-# draws a letter (a2: memory address of letter) at (a0, a1)
-# modifies t0-t6
+# draws a letter (a2: letter halfword) at (a0, a1)
+# modifies t0-t6, a0, a1
 draw_letter:
 	addi sp, sp, -4	# store ra on stack
 	sw ra, 0(sp)
-	lh t0, 0(a2) 	# load letter into t0
-	li t1, 1	# load bit mask into t1
+	mv t0, a2	# move letter into t0
+	li t1, 0x8000	# load bit mask into t1 (starts at left and moves right)
 	li t2, 0	# load x counter into t2
 	li t3, 0 	# load y counter into t3
 	li t4, 3	# counters increment when they reach 3 (t4)
@@ -76,7 +88,7 @@ draw_let1:
 	lw t0, 0(sp)
 	addi sp, sp, 4
 draw_let2:
-	slli t1, t1, 1		# shift bitmask to left 1
+	srli t1, t1, 1		# shift bitmask to right 1
 	beq t2, t4, draw_let3	# branch if x counter has reached end
 	addi t2, t2, 1		# increment x counter if not
 	addi a0, a0, 1		# and increment x coord
