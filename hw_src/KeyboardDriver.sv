@@ -69,7 +69,7 @@ module KeyboardDriver(
               
             ST_INTRPT: begin
                 INTRPT <= 1'b1;                 // create interrupt pulse
-                if (intrptCount == 8) begin     // if pulse has been at least 60 ns
+                if (intrptCount == 6) begin     // if pulse has been at least 60 ns
                   StateReg <= ST_WAIT;          // go back to waiting for next key
                 end else begin
                   intrptCount <= intrptCount + 1;   // count how long interrupt pulse is high
