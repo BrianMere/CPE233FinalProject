@@ -12,11 +12,13 @@
 // 		sum(total,i);
 // }
 
-#include <complex.h>
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+// Can't use math.h so using a 3rd party one. 
+// #include <fix16.h>
+#include <tgmath.h>
+
+// Allowed libraries:
+// check out the include folder in:
+// /usr/lib/gcc/riscv64-unknown-elf/10.2.0/include folder
 
 typedef struct {
 	float hue; 
@@ -46,8 +48,8 @@ void draw_dot(Point p, HSV_Color color);
 void draw_square(Point p1, Point p2);
 void draw_axes();
 
-// For function... ing?
-complex execute_complex_function(Point p, char function[]);
+// // For function... ing?
+// complex execute_complex_function(Point p, char function[]);
 int isOperation(char c);
 
 // String manipulations
@@ -59,11 +61,13 @@ void main() {
 
 	int row,column = 0;
 
-	complex i = 4.1f + 2.3f * I;
+	// complex i = 4.1f + 2.3f * I;
 
-	__asm__("
-		addi t1, x0, 0 
-	");
+	// __asm__("
+	// 	addi t1, x0, 0 
+	// ");
+
+	fix16_t a = fix16_from_float(1.23);
 	
 }
 
@@ -84,22 +88,22 @@ void draw_axes() {
 }
 
 // The parameter string function contains a prefix notation string. 
-complex execute_complex_function(Point p, char function[]) {
+// complex execute_complex_function(Point p, char function[]) {
 
-	// From here we assume that the function is in prefix notation (ex: + 3 4 - 7 + 14 - ...)
-	// Note that strlen uses the fact that \0 is the terminating character on a string. Ex: "Computer" has len = 9
-	int length = strlen(function);
+// 	// From here we assume that the function is in prefix notation (ex: + 3 4 - 7 + 14 - ...)
+// 	// Note that strlen uses the fact that \0 is the terminating character on a string. Ex: "Computer" has len = 9
+// 	int length = strlen(function);
 
-	if(length < 3) {
+// 	if(length < 3) {
 
-	}
+// 	}
 
-	float i1 = function[0]
+// 	float i1 = function[0]
 
-	for(int i = 0; i < strlen(function); i++) {
+// 	for(int i = 0; i < strlen(function); i++) {
 		
-	}
-}
+// 	}
+// }
 
 
 int isOperation(char c) {
