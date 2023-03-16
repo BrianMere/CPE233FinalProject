@@ -19,7 +19,7 @@
 .eqv CHAR_2,		0x0000f3cf
 .eqv CHAR_3,		0x0000f71f
 .eqv CHAR_4,		0x000099f1
-.eqv CHAR_5,		0x0000f9f7
+.eqv CHAR_5,		0x0000f8f7
 .eqv CHAR_6,		0x00008f9f
 .eqv CHAR_7,		0x0000f111
 .eqv CHAR_8,		0x0000f9ff
@@ -34,6 +34,7 @@
 .eqv CHAR_DOT, 		0x00000004
 .eqv CHAR_OPENPAREN, 	0x00002442
 .eqv CHAR_CLOSEPAREN,	0x00004224
+.eqv CHAR_BLOCK,	0x0000ffff
 
 .data 
 SCANCODE: 
@@ -75,7 +76,7 @@ main_loop:
 # =================================================================================================
 
 # draws a letter based on scan code
-# modifies t0, t1, a0, a1, a2, a3
+# modifies t0, t1, a0, a1, a2, a3, (s4 for backspace)
 process_input:
 	addi  sp, sp, -4	# store ra on stack
 	sw    ra, 0(sp)
@@ -84,34 +85,132 @@ process_input:
 	mv    a1, s5		# cursor y -> arg
 	li    a3, 0x00		# color black 
 	lw    t0, 0(s1)       	# read saved scancode
-	# check letters
+	# check scancode and draw char
 	li    t1, 0x1c		# load A code
 	beq   t0, t1, pi_a	# check if A
 	li    t1, 0x32		# load B code
 	beq   t0, t1, pi_b	# check if B
-	li    t1, 0x21		# load C code
-	beq   t0, t1, pi_c	# check if C
-	li    t1, 0x29		# load SPACE code
-	beq   t0, t1, pi_space	# check if SPACE
-	# default
-	li    a2, CHAR_MULT
+	li    t1, 0x21		# C
+	beq   t0, t1, pi_c
+	li    t1, 0x23		# D
+	beq   t0, t1, pi_d
+	li    t1, 0x24		# E
+	beq   t0, t1, pi_e
+	li    t1, 0x2b		# F
+	beq   t0, t1, pi_f
+	li    t1, 0x34		# G
+	beq   t0, t1, pi_g
+	li    t1, 0x33		# H
+	beq   t0, t1, pi_h
+	li    t1, 0x43		# I
+	beq   t0, t1, pi_i
+	li    t1, 0x3b		# J
+	beq   t0, t1, pi_j
 	
+	li    t1, 0x45		# 0
+	beq   t0, t1, pi_0
+	li    t1, 0x16		# 1
+	beq   t0, t1, pi_1
+	li    t1, 0x1e		# 2
+	beq   t0, t1, pi_2
+	li    t1, 0x26		# 3
+	beq   t0, t1, pi_3
+	li    t1, 0x25		# 4
+	beq   t0, t1, pi_4
+	li    t1, 0x2e		# 5
+	beq   t0, t1, pi_5
+	li    t1, 0x36		# 6
+	beq   t0, t1, pi_6
+	li    t1, 0x3d		# 7
+	beq   t0, t1, pi_7
+	li    t1, 0x3e		# 8
+	beq   t0, t1, pi_8
+	li    t1, 0x46		# 9
+	beq   t0, t1, pi_9
+	
+	li    t1, 0x29		# SPACE
+	beq   t0, t1, pi_space
+	li    t1, 0x66		# BACKSPACE
+	beq   t0, t1, pi_backspace
+	
+	li    a2, CHAR_MULT	# DEFAULT
 pi_draw:
 	call  draw_char		# draw letter
 	lw    ra, 0(sp)		# restore ra from stack
 	addi  sp, sp, 4
 	ret
-	
 pi_a:
 	li    a2, CHAR_A	# load letter into arg
-	j     pi_draw
+	j     pi_draw		# jump up to draw and return
 pi_b:
-	li    a2, CHAR_B	# load letter into arg
+	li    a2, CHAR_B
 	j     pi_draw
 pi_c:
-	li    a2, CHAR_C	# load letter into arg
+	li    a2, CHAR_C
+	j     pi_draw
+pi_d:
+	li    a2, CHAR_D
+	j     pi_draw
+pi_e:
+	li    a2, CHAR_E
+	j     pi_draw
+pi_f:
+	li    a2, CHAR_F
+	j     pi_draw
+pi_g:
+	li    a2, CHAR_G
+	j     pi_draw
+pi_h:
+	li    a2, CHAR_H
+	j     pi_draw
+pi_i:
+	li    a2, CHAR_I
+	j     pi_draw
+pi_j:
+	li    a2, CHAR_J
+	j     pi_draw
+pi_0:
+	li    a2, CHAR_0
+	j     pi_draw
+pi_1:
+	li    a2, CHAR_1
+	j     pi_draw
+pi_2:
+	li    a2, CHAR_2
+	j     pi_draw
+pi_3:
+	li    a2, CHAR_3
+	j     pi_draw
+pi_4:
+	li    a2, CHAR_4
+	j     pi_draw
+pi_5:
+	li    a2, CHAR_5
+	j     pi_draw
+pi_6:
+	li    a2, CHAR_6
+	j     pi_draw
+pi_7:
+	li    a2, CHAR_7
+	j     pi_draw
+pi_8:
+	li    a2, CHAR_8
+	j     pi_draw
+pi_9:
+	li    a2, CHAR_9
 	j     pi_draw
 pi_space:
+	lw    ra, 0(sp)		# restore ra from stack
+	addi  sp, sp, 4
+	ret
+pi_backspace:
+	# TODO: Check if moving cursor back goes up a line
+	addi  s4, s4, -6	# move cursor back
+	mv    a0, s4		# cursor x -> arg
+	li    a2, CHAR_BLOCK	# load letter into arg
+	li    a3, BG_COLOR	# use bg color
+	call  draw_char		# draw letter
+	addi  s4, s4, -6	# move cursor back again
 	lw    ra, 0(sp)		# restore ra from stack
 	addi  sp, sp, 4
 	ret
