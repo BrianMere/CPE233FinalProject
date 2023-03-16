@@ -42,8 +42,16 @@ module OTTER_Wrapper_tb();
         PS2DATA = 0;
         
         for (i = 0; i < 1000; i = i + 1) begin
-            #10;
+            #100;
             CLK = ~CLK;
+            if (i == 300 || i == 301) begin
+                PS2CLK = 1;
+                PS2DATA = 1;
+            end
+            else begin
+                PS2CLK = 0;
+                PS2DATA = 0;
+            end
         end
     end
     
