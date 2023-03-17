@@ -104,7 +104,30 @@ char parse_scan_code();
 #define BACKSPACE 8
 
 // Character definitions
-#define CHAR_G 0x0000f89f
+#define CHAR_PLUS   0x000004e4
+#define CHAR_MINUS  0x000000e0
+#define CHAR_MULT   0x00000a4a
+#define CHAR_DIV    0x00002448
+#define CHAR_POW    0x00004a00
+
+#define CHAR_S      0x0000f8f7
+#define CHAR_Q      0x0000eae3
+#define CHAR_C      0x0000f88f
+#define CHAR_T      0x0000f444
+#define CHAR_L      0x00004446
+#define CHAR_L_CAP  0x0000888f
+#define CHAR_ABS    0x00004444
+
+#define CHAR_0      0x0000f99f
+#define CHAR_1      0x0000c44e
+#define CHAR_2      0x0000f3cf
+#define CHAR_3      0x0000f71f
+#define CHAR_4      0x000099f1
+#define CHAR_5      0x0000fc3f
+#define CHAR_6      0x00008f9f
+#define CHAR_7      0x0000f111
+#define CHAR_8      0x0000f9ff
+#define CHAR_9      0x0000f9f1
 
 int main() {
 
