@@ -56,7 +56,7 @@ $(BUILD)/%.o: src/%.S
 # link with gcc
 $(BUILD)/$(PROJECT).elf: ${AS_OBJ_FILES} ${C_OBJ_FILES} ${ASP_OBJ_FILES}
 ifneq ($(C_FILES),)
-	$(CC)  -o $@ $^ -T link.ld $(CCFLAGS) 
+	$(CC)  -o $@ $^ -T link.ld -lm $(CCFLAGS) 
 else
 	$(CC) -o $@ $^ -T link.ld -nostdlib -nostartfiles -mcmodel=medany $(CCFLAGS)
 endif
@@ -65,7 +65,7 @@ $(BUILD)/$(PROJECT).dump: $(BUILD)/$(PROJECT).elf
 ifneq ($(C_FILES),)
 	$(OBJDUMP) --no-show-raw-insn -S -s  $< > $@
 else
-	$(OBJDUMP)  -d $< > $@
+	$(OBJDUMP) -S -s $< > $@
 endif
 #-d (dissasemble)
 #-s (all sections)

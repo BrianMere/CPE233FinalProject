@@ -32,8 +32,10 @@ SECTIONS
     	/*_edata=.;*/
 	 _edata = .; PROVIDE (edata = .);
  	. = .;
+        
     }
 
     /*_edata = .; PROVIDE (edata = .);*/
-    _end=.;
+     PROVIDE( end = . );
+    _end = ALIGN(8);
 }
