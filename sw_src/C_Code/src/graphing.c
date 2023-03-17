@@ -178,7 +178,7 @@ int main() {
     Point char_point;
     char_point.x = 40;
     char_point.y = 25;
-    draw_character(char_point, CHAR_G, 0xFF);
+    draw_character(char_point, CHAR_0, 0xFF);
 
 	while (1) // never break
 	{
@@ -276,7 +276,7 @@ volatile void draw_dot(Point p, int rgb) {
 
 void draw_background(int color) {
 	const Point TOP_LEFT = {.x = 0, .y = 0};
-	const Point BOTTOM_RIGHT = {.x = COLUMN_SIZE, .y = ROW_SIZE};
+	const Point BOTTOM_RIGHT = {.x = COLUMN_SIZE, .y = ROW_SIZE - 1};
 
 	draw_rect(TOP_LEFT, BOTTOM_RIGHT, color);
 }
