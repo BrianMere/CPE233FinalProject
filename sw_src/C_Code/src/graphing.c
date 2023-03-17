@@ -55,7 +55,7 @@ int is_shift;
 volatile void draw_dot(Point p, int rgb);
 void draw_rect(Point p1, Point p2, int rgb);
 void draw_background(int rgb);
-void draw_character(Point p, char c, int rgb);
+void draw_character(Point p, int c, int rgb);
 
 // Functions
 float execute_real_function(float x, char function[]);
@@ -259,8 +259,7 @@ void draw_background(int color) {
 }
 
 // draw character, top right at point p
-void draw_character(Point p, char c, int rgb) {
-    // remember to update prototype   ^^^^
+void draw_character(Point p, int c, int rgb) {
     // x and y offsets
     int _x = 0;
     int _y = 0;
