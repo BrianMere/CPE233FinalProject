@@ -112,8 +112,8 @@ char parse_scan_code();
 
 #define CHAR_S      0x0000f8f7
 #define CHAR_Q      0x0000eae3
-#define CHAR_C      0x0000f88f
-#define CHAR_T      0x0000f444
+#define CHAR_C      0x0000e88e
+#define CHAR_T      0x0000e444
 #define CHAR_L      0x00004446
 #define CHAR_L_CAP  0x0000888f
 #define CHAR_ABS    0x00004444
@@ -128,6 +128,8 @@ char parse_scan_code();
 #define CHAR_7      0x0000f111
 #define CHAR_8      0x0000f9ff
 #define CHAR_9      0x0000f9f1
+
+#define CHAR_BLOCK  0x0000ffff
 
 int main() {
 
@@ -174,11 +176,27 @@ int main() {
 
     draw_background(COL_BLUE);
 
-    // test drawing character
+    // test drawing characters
+    int characters[] = {
+        CHAR_0, CHAR_1, CHAR_2, CHAR_3, CHAR_4, CHAR_5, CHAR_6, CHAR_7, CHAR_8, CHAR_9,
+        CHAR_PLUS, CHAR_MINUS, CHAR_MULT, CHAR_DIV, CHAR_POW,
+        CHAR_S, CHAR_Q, CHAR_C, CHAR_T, CHAR_L, CHAR_L_CAP, CHAR_ABS,
+        CHAR_BLOCK
+    };
+    int length = sizeof(characters) / sizeof(int);
+    int char_width = 4;
     Point char_point;
-    char_point.x = 40;
-    char_point.y = 25;
-    draw_character(char_point, CHAR_0, 0xFF);
+    int start_pos = 3;
+    char_point.x = start_pos;
+    char_point.y = start_pos;
+    for (i = 0; i < length; i++) {
+        draw_character(char_point, characters[i], 0xFF);
+        char_point.x += char_width + 1;
+        if (char_point.x >= COLUMN_SIZE - char_width) {
+            char_point.x = start_pos;
+            char_point.y += char_width + 1;
+        }
+    }
 
 	while (1) // never break
 	{
@@ -296,7 +314,7 @@ void draw_character(Point p, int c, int rgb) {
             Point temp;
             temp.x = p.x + _x;
             temp.y = p.y + _y;
-            draw_dot(temp, rgb)
+            draw_dot(temp, rgb);
         }
         // shift mask to right
         mask = mask >> 1;
