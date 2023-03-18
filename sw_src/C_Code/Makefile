@@ -14,11 +14,11 @@ AS_OBJ_FILES := $(patsubst src/%.s,build/%.o,$(AS_FILES))
 ASP_OBJ_FILES := $(patsubst src/%.S,build/%.o,$(ASP_FILES))
 
 # settings for the compilers
-# ifneq ($(C_FILES),)
-# RISCV_PREFIX = riscv32-unknown-elf-
-# else
+ifneq ($(C_FILES),)
+RISCV_PREFIX = riscv32-unknown-elf-
+else
 RISCV_PREFIX = riscv64-unknown-elf-
-# endif
+endif
 CC = $(RISCV_PREFIX)gcc
 LD = $(RISCV_PREFIX)ld
 OBJCOPY = $(RISCV_PREFIX)objcopy
